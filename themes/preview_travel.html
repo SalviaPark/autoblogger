@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salvia Information — 여행 테마 미리보기</title>
+<!--
+  이 파일은 base_theme.xml의 디자인을 브라우저에서 바로 확인하기 위한 정적 미리보기입니다.
+  Blogger 위젯 없이 순수 HTML/CSS로 실제 테마와 동일한 색·폰트·여백·컴포넌트를 반영합니다.
+  블로그별 색상은 아래 :root 의 --accent 계열 변수 한 곳만 바꾸면 됩니다.
+    건강=sage green / 재테크=blue / IT=indigo / 여행=orange / 생활정보=teal
+-->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{
+  /* ===== 주제 포인트 컬러 (블로그별로 이 블록만 교체) — 현재: 여행(따뜻한 코랄/테라코타(활기·따뜻)) ===== */
+  --accent:#a85e37;
+  --accent-weak:#f5e6db;
+  --accent-ink:#8a4c2e;
+
+  /* ===== 공통 디자인 토큰 (부드러운 오프화이트 톤) ===== */
+  --bg:#fdf9f6;
+  --surface:#fffdfb;
+  --surface-2:#f6ede6;
+  --ink:#302823;
+  --ink-2:#79675c;
+  --line:#ecdfd5;
+  --radius:16px;
+  --shadow:0 1px 2px rgba(40,35,26,.05), 0 8px 24px rgba(40,35,26,.07);
+  --shadow-hover:0 2px 4px rgba(40,35,26,.08), 0 16px 40px rgba(40,35,26,.14);
+  --maxw:1120px;
+  --font:"Pretendard","Pretendard Variable",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#1e1815; --surface:#28211d; --surface-2:#2f2722;
+    --ink:#efe6df; --ink-2:#b6a599; --line:#413530;
+    --accent:#e0a184; --accent-weak:#3a271d; --accent-ink:#eab79f;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    --shadow-hover:0 2px 4px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.5);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font);line-height:1.75;font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+
+/* ===== Header ===== */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:saturate(160%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.header-inner{display:flex;align-items:center;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.02em;flex:none;white-space:nowrap}
+.brand .dot{width:26px;height:26px;border-radius:8px;background:var(--accent);
+  display:grid;place-items:center;color:#fff;font-size:14px;box-shadow:var(--shadow)}
+/* 메뉴: 줄바꿈 없이 한 줄 유지, 넘치면 가로 스크롤(PC/모바일 공통 — 좁아지면 자연히 스크롤 탭이 됨) */
+.nav{display:flex;align-items:center;gap:2px;margin-left:auto;flex-wrap:nowrap;
+  overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;-ms-overflow-style:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{display:inline-flex;align-items:center;padding:0 14px;height:33px;border-radius:999px;color:var(--ink-2);font-weight:600;font-size:14.5px;transition:.18s;white-space:nowrap;flex:none}
+.nav a:hover{color:var(--accent-ink);background:var(--accent-weak)}
+.nav a.active{color:#fff;background:var(--accent)}
+
+/* ===== Hero / category strip ===== */
+.hero{padding:44px 0 20px}
+.hero h1{font-size:30px;line-height:1.3;letter-spacing:-.03em;margin:0 0 10px;font-weight:800}
+.hero p{color:var(--ink-2);margin:0;font-size:16.5px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.chip{padding:7px 14px;border:1px solid var(--line);border-radius:999px;font-size:13.5px;font-weight:600;color:var(--ink-2);transition:.18s}
+.chip:hover{border-color:var(--accent);color:var(--accent-ink)}
+
+/* ===== Layout ===== */
+.layout{display:grid;grid-template-columns:1fr 300px;gap:36px;padding:28px 0 60px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+/* ===== Card grid ===== */
+.section-title{display:flex;align-items:center;gap:10px;margin:0 0 18px;font-size:15px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-2)}
+.section-title::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+/* 최신 글은 모든 화면 폭에서 2개까지만 노출, 3번째 카드부터 숨김 (데스크톱 2열=한 줄) */
+.cards>.card:nth-child(n+3){display:none}
+@media(max-width:620px){
+  /* 모바일: 세로로 크게 쌓이던 카드를 컴팩트한 가로형 리스트로 전환 — 데스크톱(>620px)은 위 2열 그리드 그대로 */
+  .cards{grid-template-columns:1fr;gap:10px}
+  .card{display:flex;flex-direction:row;align-items:stretch}
+  .card:hover{transform:none}
+  .card .thumb{width:104px;flex:none;aspect-ratio:auto}
+  .card .thumb .tag{display:none}
+  .card .body{padding:10px 12px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+  .card h3{font-size:14.5px;margin:0 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card p{display:-webkit-box;-webkit-line-clamp:1;font-size:12.5px}
+  .card .meta{margin-top:6px;font-size:11px}
+}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s,border-color .2s;
+}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.card .thumb{aspect-ratio:16/9;background:
+  linear-gradient(135deg,var(--accent-weak),color-mix(in srgb,var(--accent) 22%,transparent));
+  position:relative}
+.card .thumb .tag{position:absolute;left:12px;top:12px;background:var(--surface);color:var(--accent-ink);
+  font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;box-shadow:var(--shadow)}
+.card .body{padding:16px 16px 18px}
+.card h3{margin:0 0 8px;font-size:17px;line-height:1.4;letter-spacing:-.02em;font-weight:700}
+.card:hover h3{color:var(--accent-ink)}
+.card p{margin:0;color:var(--ink-2);font-size:14px;line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .meta{margin-top:14px;display:flex;gap:10px;align-items:center;color:var(--ink-2);font-size:12.5px}
+.card .meta .d{width:3px;height:3px;border-radius:50%;background:var(--ink-2)}
+
+/* ===== Ad slot ===== */
+.ad{margin:24px 0;border:1px dashed color-mix(in srgb,var(--accent) 45%,var(--line));
+  border-radius:14px;background:var(--surface-2);color:var(--ink-2);
+  text-align:center;padding:22px;font-size:13px;font-weight:600;letter-spacing:.03em}
+
+/* ===== Sidebar ===== */
+.side .box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow);margin-bottom:20px}
+.side h4{margin:0 0 14px;font-size:14px;font-weight:800;letter-spacing:.02em}
+.side .pop{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.side .pop:last-child{border-bottom:0}
+.side .pop .n{color:var(--accent);font-weight:800;font-size:15px;min-width:18px}
+.side .pop a{font-size:14px;font-weight:600;line-height:1.45}
+.side .pop a:hover{color:var(--accent-ink)}
+.side .labels{display:flex;flex-wrap:wrap;gap:8px}
+.side .labels a{font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);transition:.18s}
+.side .labels a:hover{background:var(--accent-weak);color:var(--accent-ink)}
+
+/* ===== Article sample ===== */
+.article{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:30px;box-shadow:var(--shadow);margin-top:36px}
+.article h2{font-size:24px;letter-spacing:-.02em;margin:.2em 0 .5em}
+.article h3{font-size:18px;margin:1.4em 0 .5em}
+.article p{color:var(--ink);margin:0 0 1em}
+.article b{color:var(--accent-ink);background:var(--accent-weak);padding:0 3px;border-radius:4px}
+
+/* ===== Footer ===== */
+.site-footer{border-top:1px solid var(--line);background:var(--surface-2);margin-top:20px;padding:36px 0}
+.foot-inner{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center}
+.foot-links{display:flex;flex-wrap:wrap;gap:8px 20px}
+.foot-links a{color:var(--ink-2);font-size:14px;font-weight:600}
+.foot-links a:hover{color:var(--accent-ink)}
+.foot-copy{color:var(--ink-2);font-size:13px}
+.badge{font-size:11px;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:3px 9px;margin-left:auto}
+
+/* ===== Responsive breakpoints (모바일 우선 보정, 320px 이하까지 안전) ===== */
+@media(max-width:480px){
+  .wrap{padding:0 20px}
+  .nav a{padding:0 12px;font-size:14px}
+  .hero{padding:28px 0 14px}
+  .hero h1{font-size:23px}
+  .hero p{font-size:14.5px}
+  .layout{gap:24px;padding:20px 0 40px}
+  .article{padding:20px}
+  .article h2{font-size:20px}
+  .foot-inner{gap:12px 18px}
+  .foot-copy{margin-left:0}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand"><span class="dot">S</span> Salvia <span style="color:var(--accent)">여행</span></a>
+    <nav class="nav">
+      <a class="active">홈</a>
+      <a>건강관리</a>
+      <a>영양·식단</a>
+      <a>검진·수치</a>
+      <a>소개</a>
+      <a>연락처</a>
+    </nav>
+  </div>
+</header>
+
+<section class="wrap hero">
+  <p>혈압·혈당·수면·영양제까지 — 직접 찾아보고 검증한 건강 정보를 쉽게 정리했습니다.</p>
+  <div class="chips">
+    <span class="chip"># 혈압관리</span><span class="chip"># 혈당</span>
+    <span class="chip"># 수면</span><span class="chip"># 영양제</span>
+    <span class="chip"># 건강검진</span><span class="chip"># 갱년기</span>
+  </div>
+</section>
+
+<div class="wrap layout">
+  <main>
+    <div class="section-title">최신 글</div>
+    <div class="cards">
+      <article class="card">
+        <div class="thumb"><span class="tag">혈압관리</span></div>
+        <div class="body">
+          <h3>혈압 낮추는 생활습관 7가지, 약 없이 관리하는 법</h3>
+          <p>매일 조금씩 바꾸는 것만으로 혈압 수치가 달라집니다. 실제로 효과 본 습관을 정리했어요.</p>
+          <div class="meta"><span>2026.07.11</span><span class="d"></span><span>읽기 4분</span></div>
+        </div>
+      </article>
+      <article class="card">
+        <div class="thumb"><span class="tag">혈당</span></div>
+        <div class="body">
+          <h3>공복혈당 100 vs 126, 어디부터 위험할까?</h3>
+          <p>건강검진 결과지의 혈당 수치, 어떻게 읽어야 하는지 참고용으로 쉽게 풀었습니다.</p>
+          <div class="meta"><span>2026.07.10</span><span class="d"></span><span>읽기 5분</span></div>
+        </div>
+      </article>
+      <article class="card">
+        <div class="thumb"><span class="tag">영양제</span></div>
+        <div class="body">
+          <h3>마그네슘 효능과 부작용, 하루 권장량까지</h3>
+          <p>눈 밑 떨림에 마그네슘? 종류별 차이와 똑똑하게 먹는 법을 정리했습니다.</p>
+          <div class="meta"><span>2026.07.09</span><span class="d"></span><span>읽기 6분</span></div>
+        </div>
+      </article>
+      <article class="card">
+        <div class="thumb"><span class="tag">수면</span></div>
+        <div class="body">
+          <h3>잠 안 올 때 바로 쓰는 수면위생 8가지</h3>
+          <p>수면제 없이 잠드는 법. 오늘 밤부터 실천할 수 있는 것들만 모았습니다.</p>
+          <div class="meta"><span>2026.07.08</span><span class="d"></span><span>읽기 4분</span></div>
+        </div>
+      </article>
+    </div>
+
+    <!-- 광고 영역(상단/하단)은 애드센스 승인 후 복원 예정 — 승인 전까지 숨김 -->
+
+    <article class="article">
+      <h2>본문 글 예시 — 이렇게 보입니다</h2>
+      <p>실제 발행되는 글은 이런 모습입니다. 핵심 수치와 용어는 <b>이렇게 강조</b>되어 한눈에 들어오고, 소제목과 목록으로 구조가 잡혀 읽기 편합니다.</p>
+      <h3>1. 소제목은 이렇게 표시됩니다</h3>
+      <p>문단은 넉넉한 줄간격으로 편안하게 읽히고, 모바일에서도 글자 크기가 자동으로 조정됩니다. 중요한 부분은 <b>1,500자 이상</b>의 충분한 본문으로 깊이를 더합니다.</p>
+    </article>
+  </main>
+
+  <aside class="side">
+    <div class="box">
+      <h4>인기 글</h4>
+      <div class="pop"><span class="n">1</span><a>면역력 높이는 방법, 환절기 필수 습관</a></div>
+      <div class="pop"><span class="n">2</span><a>콜레스테롤 낮추는 음식 10가지</a></div>
+      <div class="pop"><span class="n">3</span><a>간수치 정상범위와 높아지는 원인</a></div>
+      <div class="pop"><span class="n">4</span><a>갱년기 증상 완화, 생활습관부터</a></div>
+    </div>
+    <div class="box">
+      <h4>카테고리</h4>
+      <div class="labels">
+        <a>혈압관리</a><a>혈당</a><a>수면</a><a>영양제</a><a>건강검진</a><a>면역력</a><a>갱년기</a>
+      </div>
+    </div>
+    <!-- 사이드바 광고는 애드센스 승인 후 복원 예정 — 승인 전까지 숨김 -->
+  </aside>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap foot-inner">
+    <div class="foot-links">
+      <a>개인정보처리방침</a>
+      <a>소개</a>
+      <a>연락처</a>
+      <a>면책조항</a>
+    </div>
+    <span class="badge">HTTPS 보안 연결</span>
+    <span class="foot-copy">© 2026 Salvia Information. All rights reserved.</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+token.json
+client_secrets.json
+__pycache__/
+*.pyc
+_workspace/
+.DS_Store
+*.log
+gemini_keys.env

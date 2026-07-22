@@ -1,0 +1,212 @@
+name: Auto Blog Post (5 Blogs)
+
+on:
+  # 2026-07-23: 이 저장소를 Public으로 전환해 Actions 무료 할당량(월 2,000분)
+  # 제한 자체를 없앴다(Public repo는 Actions 무제한 무료). 8월 할당량 리셋 시
+  # Private로 되돌릴 예정이며, 그때 다시 한도 내에서 운영 가능한지 확인할 것
+  # (PROJECT_PLAN.md 참고).
+  schedule:
+    - cron: '3 23,7,15 * * *'
+  workflow_dispatch:
+    inputs:
+      health:
+        description: '블로그1 발행'
+        type: boolean
+        default: true
+      blog2:
+        description: '블로그2 발행'
+        type: boolean
+        default: true
+      blog3:
+        description: '블로그3 발행'
+        type: boolean
+        default: true
+      blog4:
+        description: '블로그4 발행'
+        type: boolean
+        default: true
+      blog5:
+        description: '블로그5 발행'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+# 이 워크플로우의 실행끼리(cron 자동발행 vs 수동발행 등) 겹치면 여러 job이 동시에
+# _knowledge/*.json을 커밋하려다 push 충돌·rebase 충돌이 나고, 심하면 직전 실행의
+# 발행 이력이 아직 안 올라간 채로 다음 실행이 시작돼 같은 키워드를 중복 선택하는
+# 문제까지 생긴다(실제로 겪음). 새 실행은 현재 실행이 완전히 끝날 때까지 큐에서
+# 대기시켜 겹치지 않게 한다(cancel-in-progress: false — 진행 중인 발행을 취소하지
+# 않고 줄만 세운다).
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  determine-blogs:
+    runs-on: ubuntu-latest
+    outputs:
+      blog_ids: ${{ steps.list.outputs.blog_ids }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        run: |
+          python3 -c "
+          import json
+          import random
+          blogs = json.load(open('blogs.json'))['blogs']
+
+          # github.event.inputs에서 각 블로그 boolean 값 읽기
+          # cron 트리거일 때는 inputs가 없어 빈 문자열이므로 true로 취급
+          selected = {
+              'health': '${{ github.event.inputs.health }}'.lower() != 'false',
+              'blog2': '${{ github.event.inputs.blog2 }}'.lower() != 'false',
+              'blog3': '${{ github.event.inputs.blog3 }}'.lower() != 'false',
+              'blog4': '${{ github.event.inputs.blog4 }}'.lower() != 'false',
+              'blog5': '${{ github.event.inputs.blog5 }}'.lower() != 'false'
+          }
+
+          # posts_per_day > 0이고 선택된 블로그만 포함
+          ids = [b['id'] for b in blogs if selected.get(b['id'], False) and b.get('posts_per_day', 0) > 0]
+
+          # 무료 Gemini 키가 blogs.json 정의 순서(health, blog2, ...)대로 항상 먼저
+          # 소진되면 뒤쪽 블로그(blog4, blog5)가 매번 손해를 본다. 실행마다 순서를
+          # 섞어 쿼터 부족의 피해가 특정 블로그에 고정되지 않고 골고루 분산되게 한다.
+          random.shuffle(ids)
+
+          print('blog_ids=' + json.dumps(ids))
+          " >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: determine-blogs
+    if: needs.determine-blogs.outputs.blog_ids != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        blog_id: ${{ fromJson(needs.determine-blogs.outputs.blog_ids) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+      - name: "글 생성 및 발행: ${{ matrix.blog_id }}"
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GEMINI_SUB_API_KEY: ${{ secrets.GEMINI_SUB_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          IMGBB_API_KEY: ${{ secrets.IMGBB_API_KEY }}
+          INSURANCE_BLOGGER_TOKEN_JSON: ${{ secrets.INSURANCE_BLOGGER_TOKEN_JSON }}
+          BLOGGER_CLIENT_SECRETS_JSON: ${{ secrets.BLOGGER_CLIENT_SECRETS_JSON }}
+        run: python generate_post.py ${{ matrix.blog_id }} && python publisher.py ko
+      - name: 발행 이력·트렌드 캐시·키 로테이션·최근 이미지 커밋
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain _knowledge/published_log.jsonl _knowledge/trend_cache.json _knowledge/key_rotation.json _knowledge/recent_pixabay_ids.json 2>/dev/null)" ]; then
+            # 재시도 중 origin 최신본으로 리셋해도 이번 실행에서 새로 발행한 글 1건과
+            # 이번 실행이 새로 사용한 Pixabay 이미지 id는 잃지 않도록 미리 따로 챙겨둔다.
+            # (recent_pixabay_ids.json을 그냥 버려두면 이번 실행에서 실제로 쓴 이미지가
+            # "최근 재사용 이미지 목록"에 반영 안 된 채 사라져, 바로 다음 발행에서 같은
+            # 사진이 다시 뽑힐 수 있다 — 2026-07-14 밤 blog3에서 실제로 이렇게
+            # 재발행돼 두 글의 대표 이미지가 완전히 동일한 사고가 났다. 원인은 push
+            # 충돌 시 git reset --hard로 로컬의 recent_pixabay_ids.json 갱신분이
+            # published_log.jsonl 라인만 빼고 통째로 사라졌기 때문으로 확인됨.)
+            NEW_LOG_LINE=""
+            if [ -n "$(git status --porcelain _knowledge/published_log.jsonl 2>/dev/null)" ]; then
+              NEW_LOG_LINE=$(tail -n 1 _knowledge/published_log.jsonl)
+            fi
+
+            NEW_PIXABAY_IDS_FILE=$(mktemp)
+            echo "[]" > "$NEW_PIXABAY_IDS_FILE"
+            if [ -n "$(git status --porcelain _knowledge/recent_pixabay_ids.json 2>/dev/null)" ]; then
+              python3 -c "
+          import json, subprocess
+          try:
+              old_raw = subprocess.run(
+                  ['git', 'show', 'HEAD:_knowledge/recent_pixabay_ids.json'],
+                  capture_output=True, text=True, check=True,
+              ).stdout
+              old = json.loads(old_raw) if old_raw.strip() else []
+          except Exception:
+              old = []
+          with open('_knowledge/recent_pixabay_ids.json', encoding='utf-8') as f:
+              new = json.load(f)
+          old_set = set(old)
+          added = [x for x in new if x not in old_set]
+          with open('$NEW_PIXABAY_IDS_FILE', 'w', encoding='utf-8') as out:
+              json.dump(added, out)
+          "
+              echo "이번 실행이 새로 쓴 Pixabay id: $(cat "$NEW_PIXABAY_IDS_FILE")"
+            fi
+
+            success=0
+            for i in 1 2 3 4 5; do
+              git add _knowledge/published_log.jsonl
+              [ -f _knowledge/trend_cache.json ] && git add _knowledge/trend_cache.json
+              [ -f _knowledge/key_rotation.json ] && git add _knowledge/key_rotation.json
+              [ -f _knowledge/recent_pixabay_ids.json ] && git add _knowledge/recent_pixabay_ids.json
+              # 재시도 중 origin으로 리셋한 뒤 우리 몫(새 로그 줄)이 없으면 커밋할
+              # 변경사항이 아예 없을 수 있다(트렌드 캐시/키 카운터처럼 안 지켜도 되는
+              # 값만 있던 경우) — 이때 git commit을 또 실행하면 "커밋할 게 없음"으로
+              # 실패해 스크립트 전체가 죽으므로, 그 경우는 이미 끝난 것으로 처리한다.
+              if git diff --cached --quiet; then
+                echo "커밋할 변경사항 없음(재시도 중 origin과 이미 같아짐) — 완료 처리"
+                success=1
+                break
+              fi
+              git commit -m "발행 이력·트렌드 캐시·키 로테이션 갱신: ${{ matrix.blog_id }} (run ${{ github.run_id }})"
+              if git push origin main; then
+                success=1
+                break
+              fi
+              echo "push 실패, 재시도 ($i/5)..."
+              git fetch origin main
+              # git rebase/merge로 텍스트 병합하지 않는다 — key_rotation.json은 값
+              # 하나짜리라 두 커밋이 같은 줄을 바꾸면 3-way 병합이 원천적으로 불가능해
+              # 무조건 충돌하고, published_log.jsonl도 다른 job이 거의 동시에 끝줄에
+              # 새 줄을 추가하면 실제로 rebase 충돌이 나는 걸 확인했다. 대신 매번
+              # origin 최신본으로 깨끗하게 맞추고 이번 실행분(새 로그 1줄)만 다시 얹는다.
+              git reset --hard origin/main
+              if [ -n "$NEW_LOG_LINE" ]; then
+                echo "$NEW_LOG_LINE" >> _knowledge/published_log.jsonl
+              fi
+              if [ "$(cat "$NEW_PIXABAY_IDS_FILE")" != "[]" ]; then
+                python3 -c "
+          import json
+          with open('_knowledge/recent_pixabay_ids.json', encoding='utf-8') as f:
+              ids = json.load(f)
+          with open('$NEW_PIXABAY_IDS_FILE', encoding='utf-8') as f:
+              added = json.load(f)
+          for a in added:
+              if a not in ids:
+                  ids.append(a)
+          ids = ids[-150:]  # publisher.py의 RECENT_IMAGES_MAX(150)와 동일하게 유지
+          with open('_knowledge/recent_pixabay_ids.json', 'w', encoding='utf-8') as f:
+              json.dump(ids, f, ensure_ascii=False)
+          "
+              fi
+              sleep $((RANDOM % 5 + 1))
+            done
+            rm -f "$NEW_PIXABAY_IDS_FILE"
+            if [ "$success" -ne 1 ]; then
+              echo "::error::발행 이력 커밋 push가 5회 재시도 후에도 실패했습니다(글 발행 자체는 이미 완료됨)"
+              exit 1
+            fi
+          else
+            echo "발행 이력/트렌드 캐시/키 로테이션 변경 없음 (이번 실행은 발행하지 않았거나 그대로임)"
+          fi
+      - name: 파이프라인 산출물 보존 (감사용)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-workspace-${{ github.run_id }}-${{ matrix.blog_id }}
+          path: _workspace/
+          retention-days: 30
+          if-no-files-found: ignore

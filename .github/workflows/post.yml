@@ -1,0 +1,26 @@
+name: Auto Blog Post
+
+on:
+  schedule:
+    # 하루 5번 (매 5시간: UTC 0, 5, 10, 15, 20시)
+    - cron: '0 0,5,10,15,20 * * *'
+  workflow_dispatch:
+
+jobs:
+  post-both:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+      - name: 한/영 글 발행
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          IMGBB_API_KEY: ${{ secrets.IMGBB_API_KEY }}
+          BLOGGER_TOKEN_JSON: ${{ secrets.BLOGGER_TOKEN_JSON }}
+          BLOGGER_CLIENT_SECRETS_JSON: ${{ secrets.BLOGGER_CLIENT_SECRETS_JSON }}
+        run: python post.py

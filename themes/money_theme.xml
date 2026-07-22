@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  base_theme.xml — Salvia Information 블로그 공통 반응형 테마 (Blogger 2세대 XML)
+
+  적용 방법(수동, Blogger 관리자 콘솔에서 진행):
+    1) Blogger 관리자 접속 → 좌측 메뉴 "테마(Theme)" 클릭
+    2) 우측 상단 "테마 편집" 옆의 드롭다운(⋮ 백업/복원) 클릭
+    3) "테마 백업/복원(Backup/Restore)" 클릭 → 현재 테마를 먼저 다운로드해 백업 권장
+    4) "테마 업로드" 선택 → 이 파일(base_theme.xml) 선택 → 업로드
+    5. 업로드 후 미리보기로 PC/모바일 렌더링을 확인 후 게시(적용)
+    6) 5개 블로그(health/blog2~5) 각각에 동일하게 업로드하되, 업로드 후 "테마 편집(HTML)"에서
+       b:skin 안의 CSS 변수 accent / accent-weak / accent-ink 3개만 블로그별 주제색으로 교체
+       (건강=sage green 기본값 그대로, 재테크=blue, IT=indigo, 여행=orange, 생활정보=teal)
+
+  디자인 원본: themes/preview.html (정적 미리보기, 그대로 재현함)
+  명세: FRONTEND_SPEC.md §4
+-->
+<!DOCTYPE html>
+<html b:version='2' class='v2' expr:dir='data:blog.languageDirection' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<meta charset='utf-8'/>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<link crossorigin='anonymous' href='https://cdn.jsdelivr.net' rel='preconnect'/>
+<link as='style' crossorigin='anonymous' href='https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css' rel='stylesheet'/>
+<b:include data='blog' name='all-head-content'/>
+<title><data:blog.pageTitle/></title>
+<b:skin><![CDATA[
+:root{
+  /* ===== 주제 포인트 컬러 (블로그별로 이 블록만 교체) — 현재: 재테크(차분한 블루(신뢰·안정)) ===== */
+  --accent:#4a6fa5;
+  --accent-weak:#e2e8f1;
+  --accent-ink:#38547f;
+
+  /* ===== 공통 디자인 토큰 (부드러운 오프화이트 톤) ===== */
+  --bg:#f8f9fb;
+  --surface:#ffffff;
+  --surface-2:#eef1f6;
+  --ink:#282b30;
+  --ink-2:#636a75;
+  --line:#e0e5ec;
+  --radius:16px;
+  --shadow:0 1px 2px rgba(40,35,26,.05), 0 8px 24px rgba(40,35,26,.07);
+  --shadow-hover:0 2px 4px rgba(40,35,26,.08), 0 16px 40px rgba(40,35,26,.14);
+  --maxw:1120px;
+  --font:"Pretendard","Pretendard Variable",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#161922; --surface:#1f232e; --surface-2:#252a37;
+    --ink:#e6e9ef; --ink-2:#a2aab8; --line:#333a49;
+    --accent:#7d9dcb; --accent-weak:#1c2838; --accent-ink:#a7c0e0;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    --shadow-hover:0 2px 4px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.5);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font);line-height:1.75;font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+
+/* ===== Header ===== */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:saturate(160%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.header-inner{display:flex;align-items:center;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.02em;flex:none;white-space:nowrap}
+.brand .dot{width:26px;height:26px;border-radius:8px;background:var(--accent);
+  display:grid;place-items:center;color:#fff;font-size:14px;box-shadow:var(--shadow);flex:none}
+/* 메뉴: 줄바꿈 없이 한 줄 유지, 넘치면 가로 스크롤(PC/모바일 공통 — 좁아지면 자연히 스크롤 탭이 됨) */
+.nav{display:flex;align-items:center;gap:2px;margin-left:auto;flex-wrap:nowrap;
+  overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;-ms-overflow-style:none}
+.nav::-webkit-scrollbar{display:none}
+.nav ul{list-style:none;display:flex;gap:2px;flex-wrap:nowrap;margin:0;padding:0}
+.nav a{display:inline-flex;align-items:center;padding:0 14px;height:33px;border-radius:999px;color:var(--ink-2);font-weight:600;font-size:14.5px;transition:.18s;white-space:nowrap;flex:none}
+.nav a:hover{color:var(--accent-ink);background:var(--accent-weak)}
+.nav a.active{color:#fff;background:var(--accent)}
+
+/* ===== Hero / category strip ===== */
+.hero{padding:44px 0 20px}
+.hero h1{font-size:30px;line-height:1.3;letter-spacing:-.03em;margin:0 0 10px;font-weight:800}
+.hero p{color:var(--ink-2);margin:0;font-size:16.5px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.chip{display:inline-block;padding:7px 14px;border:1px solid var(--line);border-radius:999px;font-size:13.5px;font-weight:600;color:var(--ink-2);transition:.18s}
+.chip:hover{border-color:var(--accent);color:var(--accent-ink)}
+
+/* ===== Layout ===== */
+.layout{display:grid;grid-template-columns:1fr 300px;gap:36px;padding:28px 0 60px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+/* ===== Card grid ===== */
+.section-title{display:flex;align-items:center;gap:10px;margin:0 0 18px;font-size:15px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-2)}
+.section-title::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--accent)}
+.cards{display:flex;flex-direction:column;gap:12px}
+/* 최신 글은 모든 화면 폭에서 2개까지만 노출, 3번째 카드부터 숨김 */
+.cards>.card:nth-child(n+3){display:none}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s,border-color .2s;
+  display:flex;flex-direction:row;align-items:stretch;
+}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.card .thumb{width:200px;flex:none;aspect-ratio:auto;background:
+  linear-gradient(135deg,var(--accent-weak),color-mix(in srgb,var(--accent) 22%,transparent));
+  position:relative;display:block}
+.card .thumb img{width:100%;height:100%;object-fit:cover}
+.card .thumb .tag{position:absolute;left:12px;top:12px;background:var(--surface);color:var(--accent-ink);
+  font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;box-shadow:var(--shadow)}
+.card .body{padding:16px 16px 18px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.card h3{margin:0 0 8px;font-size:17px;line-height:1.4;letter-spacing:-.02em;font-weight:700}
+.card h3 a{display:block}
+.card:hover h3{color:var(--accent-ink)}
+.card p{margin:0;color:var(--ink-2);font-size:14px;line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .meta{margin-top:14px;display:flex;gap:10px;align-items:center;color:var(--ink-2);font-size:12.5px}
+.card .meta .d{width:3px;height:3px;border-radius:50%;background:var(--ink-2)}
+@media(max-width:620px){
+  .cards{gap:10px}
+  .card .thumb{width:104px;aspect-ratio:auto}
+  .card .thumb .tag{display:none}
+  .card .body{padding:10px 12px}
+  .card h3{font-size:14.5px;margin:0 0 4px}
+  .card p{font-size:12.5px;-webkit-line-clamp:1}
+  .card .meta{margin-top:6px;font-size:11px}
+}
+
+/* ===== Ad slot ===== */
+.ad{margin:24px 0;border:1px dashed color-mix(in srgb,var(--accent) 45%,var(--line));
+  border-radius:14px;background:var(--surface-2);color:var(--ink-2);
+  text-align:center;padding:22px;font-size:13px;font-weight:600;letter-spacing:.03em}
+
+/* ===== BlogSearch 위젯(Blogger 기본 검색창) 스타일 보정 — 얇은 기본 input을 테마 톤에 맞는 검색창으로 ===== */
+.widget.BlogSearch{margin:8px 0 24px}
+.widget.BlogSearch h2.title{font-size:15px;font-weight:800;letter-spacing:.02em;color:var(--ink-2);margin:0 0 10px}
+.widget.BlogSearch table.gsc-search-box{width:100%;border-collapse:collapse}
+.widget.BlogSearch td.gsc-input{width:100%}
+.widget.BlogSearch input.gsc-input{
+  box-sizing:border-box;width:100%;height:46px;padding:0 16px;
+  border:1px solid var(--line);border-radius:999px;
+  background:var(--surface);color:var(--ink);
+  font-family:var(--font);font-size:14.5px;
+}
+.widget.BlogSearch input.gsc-input:focus{outline:none;border-color:var(--accent)}
+.widget.BlogSearch td.gsc-search-button{padding-left:8px}
+.widget.BlogSearch input.gsc-search-button{
+  height:46px;padding:0 22px;border:none;border-radius:999px;
+  background:var(--accent);color:#fff;
+  font-family:var(--font);font-size:14.5px;font-weight:700;
+  white-space:nowrap;cursor:pointer;transition:.18s;
+}
+.widget.BlogSearch input.gsc-search-button:hover{background:var(--accent-ink)}
+
+/* ===== Sidebar ===== */
+.side .box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow);margin-bottom:20px}
+.side h4{margin:0 0 14px;font-size:14px;font-weight:800;letter-spacing:.02em}
+.side .pop-list{counter-reset:pop}
+.side .pop{counter-increment:pop;display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.side .pop:last-child{border-bottom:0}
+.side .pop .n{color:var(--accent);font-weight:800;font-size:15px;min-width:18px}
+.side .pop .n::before{content:counter(pop)}
+.side .pop a{font-size:14px;font-weight:600;line-height:1.45}
+.side .pop a:hover{color:var(--accent-ink)}
+.side .labels{display:flex;flex-wrap:wrap;gap:8px}
+.side .labels a{display:inline-block;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);transition:.18s}
+.side .labels a:hover{background:var(--accent-weak);color:var(--accent-ink)}
+
+/* ===== Article (post/page) ===== */
+.article{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:30px;box-shadow:var(--shadow);margin-top:0}
+.article h2{font-size:24px;letter-spacing:-.02em;margin:.2em 0 .5em}
+.article h3{font-size:18px;margin:1.4em 0 .5em}
+.article p{color:var(--ink);margin:0 0 1em}
+.article b,.article strong{color:var(--accent-ink);background:var(--accent-weak);padding:0 3px;border-radius:4px}
+.article img{border-radius:12px;margin:1em 0}
+.post-meta{color:var(--ink-2);font-size:13px;margin:0 0 18px;display:flex;gap:10px;flex-wrap:wrap}
+.post-meta a{color:var(--ink-2)}
+.post-meta a:hover{color:var(--accent-ink)}
+.blog-pager{display:flex;justify-content:space-between;gap:12px;margin-top:24px;flex-wrap:wrap}
+.blog-pager a{padding:10px 16px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.blog-pager a:hover{border-color:var(--accent);color:var(--accent-ink)}
+.comments{margin-top:32px}
+
+/* ===== Footer ===== */
+.site-footer{border-top:1px solid var(--line);background:var(--surface-2);margin-top:20px;padding:36px 0}
+.foot-inner{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center}
+.foot-links{display:flex;flex-wrap:wrap;gap:8px 20px;list-style:none;margin:0;padding:0}
+.foot-links a{color:var(--ink-2);font-size:14px;font-weight:600}
+.foot-links a:hover{color:var(--accent-ink)}
+.foot-copy{color:var(--ink-2);font-size:13px}
+.badge{font-size:11px;color:var(--ink-2);border:1px solid var(--line);border-radius:999px;padding:3px 9px;margin-left:auto}
+/* ===== 세부정보(Attribution)/신고하기(ReportAbuse) — 페이지 맨 아래 별도 영역으로 이동 ===== */
+.foot-meta{border-top:1px solid var(--line);margin-top:16px;padding-top:16px;
+  display:flex;justify-content:center;align-items:center;gap:18px;flex-wrap:wrap}
+.foot-meta .foot-attribution{margin:0;font-size:12px;color:var(--ink-2)}
+.foot-meta .foot-attribution a{color:var(--ink-2)}
+.foot-meta .foot-attribution a:hover{color:var(--accent-ink)}
+.foot-meta .foot-report{margin:0;font-size:12px;font-weight:600}
+.foot-meta .foot-report a{color:var(--ink-2)}
+.foot-meta .foot-report a:hover{color:var(--accent-ink)}
+
+/* ===== Responsive breakpoints (모바일 우선 보정, 320px 이하까지 안전) ===== */
+@media(max-width:480px){
+  .wrap{padding:0 20px}
+  .nav a{padding:0 12px;font-size:14px}
+  .hero{padding:28px 0 14px}
+  .hero h1{font-size:23px}
+  .hero p{font-size:14.5px}
+  .layout{gap:24px;padding:20px 0 40px}
+  .article{padding:20px}
+  .article h2{font-size:20px}
+  .foot-inner{gap:12px 18px}
+  .foot-copy{margin-left:0}
+  .blog-pager a{flex:1 1 auto;text-align:center}
+}
+]]></b:skin>
+</head>
+<body>
+
+<header class='site-header'>
+  <div class='wrap header-inner'>
+    <b:section class='header' id='header' maxwidgets='1' showaddelement='no'>
+      <b:widget id='Header1' locked='true' title='Salvia Information' type='Header' version='2'>
+        <b:includable id='main'>
+          <a class='brand' expr:href='data:blog.homepageUrl'>
+            <span class='dot'>S</span>
+            <data:blog.title/>
+          </a>
+        </b:includable>
+        <b:includable id='title'/>
+      </b:widget>
+    </b:section>
+    <b:section class='nav' id='navbar' maxwidgets='1' showaddelement='no'>
+      <b:widget id='PageList1' locked='false' title='메뉴' type='PageList' version='2'>
+        <b:includable id='main'>
+          <nav class='nav'>
+            <b:loop values='data:links' var='link'>
+              <a expr:href='data:link.href'><data:link.title/></a>
+            </b:loop>
+          </nav>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</header>
+
+<section class='wrap hero'>
+  <b:if cond='data:blog.description'>
+    <p><data:blog.description/></p>
+  </b:if>
+  <b:section class='hero-labels' id='hero-labels' maxwidgets='1' showaddelement='no'>
+    <b:widget id='Label2' locked='false' title='태그' type='Label' version='2'>
+      <b:includable id='main'>
+        <b:if cond='data:labels'>
+          <div class='chips'>
+            <b:loop values='data:labels' var='label'>
+              <a class='chip' expr:href='data:label.url'># <data:label.name/></a>
+            </b:loop>
+          </div>
+        </b:if>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</section>
+
+<div class='wrap layout'>
+  <main>
+    <b:section class='main' id='main' showaddelement='yes'>
+      <!-- 상단 광고 위젯: 애드센스 승인 후 복원 예정. 승인 전까지 숨김(주석 처리).
+      <b:widget id='HTML2' locked='false' title='상단 광고' type='HTML' version='2'>
+        <b:includable id='main'>
+          <div class='ad'>광고 영역 (Google AdSense)</div>
+        </b:includable>
+      </b:widget>
+      -->
+      <b:widget id='Blog1' locked='true' title='블로그 게시물' type='Blog' version='2'>
+        <b:includable id='main'>
+          <b:if cond='data:view.isSingleItem'>
+            <b:loop values='data:posts' var='post'>
+              <article class='article hentry'>
+                <h2 class='post-title entry-title'><data:post.title/></h2>
+                <div class='post-meta'>
+                  <span class='published'><data:post.date/></span>
+                  <b:if cond='data:post.labels'>
+                    <b:loop values='data:post.labels' var='label'>
+                      <a expr:href='data:label.url'><data:label.name/></a>
+                    </b:loop>
+                  </b:if>
+                </div>
+                <div class='post-body entry-content'>
+                  <data:post.body/>
+                </div>
+              </article>
+              <b:if cond='data:post.allowComments'>
+                <div class='comments' id='comments'>
+                  <b:include data='post' name='comments'/>
+                </div>
+              </b:if>
+            </b:loop>
+            <div class='blog-pager'>
+              <b:if cond='data:newerPageUrl'>
+                <a expr:href='data:newerPageUrl'>« 다음 글</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a expr:href='data:olderPageUrl'>이전 글 »</a>
+              </b:if>
+            </div>
+          <b:else/>
+            <div class='section-title'>최신 글</div>
+            <div class='cards'>
+              <b:loop values='data:posts' var='post'>
+                <article class='card hentry'>
+                  <a class='thumb' expr:href='data:post.url'>
+                    <b:if cond='data:post.featuredImage'>
+                      <img expr:src='resizeImage(data:post.featuredImage, 640, "16:9")'/>
+                    </b:if>
+                    <b:if cond='data:post.labels'>
+                      <b:loop values='data:post.labels' var='label' index='i'>
+                        <b:if cond='data:i == 0'>
+                          <span class='tag'><data:label.name/></span>
+                        </b:if>
+                      </b:loop>
+                    </b:if>
+                  </a>
+                  <div class='body'>
+                    <h3 class='entry-title'><a expr:href='data:post.url'><data:post.title/></a></h3>
+                    <p><data:post.snippet/></p>
+                    <div class='meta'>
+                      <span class='published'><data:post.date/></span>
+                    </div>
+                  </div>
+                </article>
+              </b:loop>
+            </div>
+            <div class='blog-pager'>
+              <b:if cond='data:olderPageUrl'>
+                <a expr:href='data:olderPageUrl'>이전 글 보기 »</a>
+              </b:if>
+            </div>
+          </b:if>
+        </b:includable>
+      </b:widget>
+      <!-- 하단 광고 위젯: 애드센스 승인 후 복원 예정. 승인 전까지 숨김(주석 처리).
+      <b:widget id='HTML3' locked='false' title='하단 광고' type='HTML' version='2'>
+        <b:includable id='main'>
+          <div class='ad'>광고 영역 (Google AdSense)</div>
+        </b:includable>
+      </b:widget>
+      -->
+    </b:section>
+  </main>
+
+  <aside class='side'>
+    <b:section class='sidebar' id='sidebar' showaddelement='yes'>
+      <b:widget id='PopularPosts1' locked='false' title='인기 글' type='PopularPosts' version='2'>
+        <b:widget-settings>
+          <b:widget-setting name='numItemsToShow'>4</b:widget-setting>
+          <b:widget-setting name='showThumbnails'>false</b:widget-setting>
+          <b:widget-setting name='showSnippets'>false</b:widget-setting>
+          <b:widget-setting name='timeRange'>ALL_TIME</b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='box'>
+            <b:if cond='data:title'><h4><data:title/></h4></b:if>
+            <div class='pop-list'>
+              <b:loop values='data:posts' var='post'>
+                <div class='pop'>
+                  <span class='n'/>
+                  <a expr:href='data:post.href'><data:post.title/></a>
+                </div>
+              </b:loop>
+            </div>
+          </div>
+        </b:includable>
+      </b:widget>
+      <b:widget id='Label1' locked='false' title='카테고리' type='Label' version='2'>
+        <b:includable id='main'>
+          <div class='box'>
+            <b:if cond='data:title'><h4><data:title/></h4></b:if>
+            <div class='labels'>
+              <b:loop values='data:labels' var='label'>
+                <a expr:href='data:label.url'><data:label.name/></a>
+              </b:loop>
+            </div>
+          </div>
+        </b:includable>
+      </b:widget>
+      <!-- 사이드바 광고 위젯: 애드센스 승인 후 복원 예정. 승인 전까지 숨김(주석 처리).
+      <b:widget id='HTML4' locked='false' title='사이드바 광고' type='HTML' version='2'>
+        <b:includable id='main'>
+          <div class='ad' style='margin:0'>광고 (사이드바)</div>
+        </b:includable>
+      </b:widget>
+      -->
+    </b:section>
+  </aside>
+</div>
+
+<footer class='site-footer'>
+  <div class='wrap foot-inner'>
+    <b:section class='footer-links' id='footer-links' maxwidgets='1' showaddelement='no'>
+      <b:widget id='PageList2' locked='false' title='푸터 메뉴' type='PageList' version='2'>
+        <b:includable id='main'>
+          <ul class='foot-links'>
+            <b:loop values='data:links' var='link'>
+              <li><a expr:href='data:link.href'><data:link.title/></a></li>
+            </b:loop>
+          </ul>
+        </b:includable>
+      </b:widget>
+    </b:section>
+    <span class='badge'>HTTPS 보안 연결</span>
+    <span class='foot-copy'>© <script>document.write(new Date().getFullYear())</script> <data:blog.title/>. All rights reserved.</span>
+  </div>
+  <div class='wrap foot-meta'>
+    <b:section class='foot-meta' id='footer-meta' maxwidgets='2' showaddelement='no'>
+      <b:widget id='Attribution1' locked='true' title='Attribution' type='Attribution' version='1'>
+        <b:includable id='main'>
+          <div class='widget-content foot-attribution'>
+            Powered by <a href='https://www.blogger.com' target='_blank'>Blogger</a>.
+          </div>
+        </b:includable>
+      </b:widget>
+      <b:widget id='ReportAbuse1' locked='true' title='Report Abuse' type='ReportAbuse' version='1'>
+        <b:includable id='main'>
+          <h3 class='foot-report'>
+            <a class='report_abuse' href='https://www.blogger.com/go/report-abuse' rel='noopener nofollow' target='_blank'>신고하기</a>
+          </h3>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</footer>
+
+</body>
+</html>
